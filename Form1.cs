@@ -348,6 +348,11 @@ namespace Labaratorna1_ANTLRFree
             }
         }
 
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Автор: Зотов Данило\nГрупа: К-25\n\nРекомендації щодо редактування форми: рекомендується відділяти лексеми пробілами, назви клітинок у формулах виділяються пробілом ОБОВ'ЯЗКОВО", "Допомога");
+        }
+
         void OpenFile()
         {
             Stream mystr = null;
