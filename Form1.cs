@@ -335,6 +335,19 @@ namespace Labaratorna1_ANTLRFree
             OpenFile();
         }
 
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Хочете зберегти зміни", "Зберегти файл", MessageBoxButtons.YesNoCancel);
+            if (result == DialogResult.Yes)
+            {
+                SaveFile();
+            }
+            else if (result == DialogResult.Cancel)
+            {
+                e.Cancel = true;
+            }
+        }
+
         void OpenFile()
         {
             Stream mystr = null;
@@ -375,5 +388,7 @@ namespace Labaratorna1_ANTLRFree
                 }
             }
         }
+
+        
     }
 }
