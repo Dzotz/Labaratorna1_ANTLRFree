@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
- 
+using System.IO;
 
 namespace Labaratorna1_ANTLRFree
 {
@@ -188,7 +188,7 @@ namespace Labaratorna1_ANTLRFree
         {
             for(int i = 0; i< dataGridView1.ColumnCount; i++)
             {
-                for (int j=0; j<dataGridView1.RowCount-1; j++)
+                for (int j=0; j<dataGridView1.RowCount; j++)
                 {
                     string cell_name = Converter26.To26(i) + (j + 1).ToString();
                     if (dict.ContainsKey(cell_name) == false)
@@ -251,7 +251,7 @@ namespace Labaratorna1_ANTLRFree
         {
             try
             {
-                int row = dataGridView1.RowCount - 2;
+                int row = dataGridView1.RowCount - 1;
                 for (int col = 0; col < dataGridView1.ColumnCount; col++)
                 {
                     DeletedCellUpd(row, col);
@@ -273,7 +273,7 @@ namespace Labaratorna1_ANTLRFree
             try
             {
                 int col = dataGridView1.ColumnCount - 1;
-                for (int row = 0; row<dataGridView1.RowCount-1; row++)
+                for (int row = 0; row<dataGridView1.RowCount; row++)
                 {
                     DeletedCellUpd(row, col);
                 }
@@ -290,12 +290,90 @@ namespace Labaratorna1_ANTLRFree
 
         void SaveFile()
         {
+            Stream mystream;
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if ((mystream = saveFileDialog1.OpenFile()) != null)
+                {
+                    StreamWriter sw = new StreamWriter(mystream);
+                    sw.WriteLine(dataGridView1.RowCount);
+                    sw.WriteLine(dataGridView1.ColumnCount);
+                    for (int i = 0; i<dataGridView1.RowCount; i++)
+                    {
+                        for (int j = 0; j<dataGridView1.ColumnCount; j++)
+                        {
+                            sw.WriteLine(dataGridView1.Rows[i].Cells[j].Value.ToString());
+                        }
+                        
+                    }
+                    try
+                    {
+                        for (int i = 0; i < dataGridView1.RowCount; i++)
+                        {
+                            for (int j = 0; j < dataGridView1.ColumnCount; j++)
+                            {
+                                string cell_name = Converter26.To26(j) + (i + 1).ToString();
+                                sw.WriteLine(dict[cell_name].Exp);
+                            }
 
+                        }
+                    }
+                    catch { }
+                    sw.Close();
+                    mystream.Close();
+                }
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            SaveFile();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            OpenFile();
         }
 
         void OpenFile()
         {
+            Stream mystr = null;
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if ((mystr = openFileDialog1.OpenFile()) != null)
+                {
+                    using (mystr)
+                    {
+                        try
+                        {
+                            StreamReader sr = new StreamReader(mystr);
+                            string scr = sr.ReadLine();
+                            string scc = sr.ReadLine();
+                            int cr = Convert.ToInt32(scr);
+                            int cc = Convert.ToInt32(scc);
+                            for (int i = 0; i < cr; i++)
+                            {
+                                for (int j = 0; j < cc; j++)
+                                {
+                                    string cell_name = Converter26.To26(j) + (i + 1).ToString();
+                                    dataGridView1.Rows[i].Cells[j].Value = sr.ReadLine();
 
+                                }
+                            }
+                            for (int i = 0; i < cr; i++)
+                            {
+                                for (int j = 0; j < cc; j++)
+                                {
+                                    string cell_name = Converter26.To26(j) + (i + 1).ToString();
+                                    dict[cell_name].Exp = sr.ReadLine();
+                                    RefreshCells();
+                                }
+                            }
+                        }
+                        catch { }
+                    }
+                }
+            }
         }
     }
 }

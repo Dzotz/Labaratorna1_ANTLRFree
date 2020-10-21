@@ -232,10 +232,14 @@ namespace Labaratorna1_ANTLRFree
             {
                 GetToken();
                 ExpSravnit(out result);
+                if (token == "]")
+                {
+                    GetToken();
+                }
                 if (token != ")")
                 {
-                    MessageBox.Show("Unbalansed parens");
-                    err = "invalid expression (unbalanced parens)";
+                        MessageBox.Show("Unbalansed parens");
+                        err = "invalid expression (unbalanced parens)";
                 }
                 GetToken();
             }
@@ -288,7 +292,7 @@ namespace Labaratorna1_ANTLRFree
                 }
                 if (expID < exp.Length)
                 {
-                    if (exp[expID] == '=' || exp[expID] == '<' || exp[expID] == '>')
+                    if ((token == "<"||token==">" )&&(exp[expID] == '=' || exp[expID] == '<' || exp[expID] == '>'))
                     {
                         token += exp[expID];
                         expID++;
