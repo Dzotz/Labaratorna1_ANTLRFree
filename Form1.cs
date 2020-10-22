@@ -353,6 +353,12 @@ namespace Labaratorna1_ANTLRFree
             MessageBox.Show("Автор: Зотов Данило\nГрупа: К-25\n\nРекомендації щодо редактування форми: рекомендується відділяти лексеми пробілами, назви клітинок у формулах виділяються пробілом ОБОВ'ЯЗКОВО", "Допомога");
         }
 
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            string cell_name = Converter26.To26(dataGridView1.SelectedCells[0].ColumnIndex) + (dataGridView1.SelectedCells[0].RowIndex +1).ToString();
+            textBox1.Text = dict[cell_name].Exp;
+        }
+
         void OpenFile()
         {
             Stream mystr = null;
