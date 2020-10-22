@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 namespace Labaratorna1_ANTLRFree
 {
-    class Parser
+    public class Parser
     {
         enum Types
         {
@@ -17,8 +17,10 @@ namespace Labaratorna1_ANTLRFree
 
         string s = "";
         string exp;
+        public string Expr { set { exp = value; } get { return exp; } }
         int expID;
         string token;
+        public string Token { get { return token; } }
         Types tokenType;
         public string err = "";
         public Parser()
@@ -269,7 +271,7 @@ namespace Labaratorna1_ANTLRFree
             }
         }
 
-        void GetToken()
+        public void GetToken()
         {
             tokenType = Types.NONE;
             token = "";
