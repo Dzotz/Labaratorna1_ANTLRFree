@@ -85,17 +85,19 @@ namespace Labaratorna1_ANTLRFree
                 string cell_name = Converter26.To26(curCol) + (curRow + 1).ToString();
                 string str = dataGridView1[curCol, curRow].Value.ToString();
                 dict2[cell_name] = str;
+                string tmp = dict[cell_name].Exp; 
                 dict[cell_name].Exp = str;
                 string st = AdressAnalizator(str, cell_name);
                 dict3[cell_name] = st;
 
                 if (IsRecur(cell_name)){
                     MessageBox.Show("Expression is recur");
-                    dataGridView1[curCol, curRow].Value = "0";
-                    dict[cell_name].Value = "0";
-                    dict[cell_name].Exp = "0";
+                    dict[cell_name].Value = pars.ExpressionStart(tmp).ToString();
+                    dataGridView1[curCol, curRow].Value = dict[cell_name].Value;
+                    dict[cell_name].Exp = tmp;
                     dict[cell_name].Depends.Clear();
                     dict[cell_name].Depends.Capacity=0;
+                    AdressAnalizator(tmp, cell_name);
                     dict2[cell_name] = "";
                     dict3[cell_name] = "";
                 }
@@ -114,11 +116,12 @@ namespace Labaratorna1_ANTLRFree
                         }
                         else
                         {
-                            dataGridView1[curCol, curRow].Value = "0";
-                            dict[cell_name].Value = "0";
-                            dict[cell_name].Exp = "0";
+                            dict[cell_name].Value = pars.ExpressionStart(tmp).ToString();
+                            dataGridView1[curCol, curRow].Value = dict[cell_name].Value;
+                            dict[cell_name].Exp = tmp;
                             dict[cell_name].Depends.Clear();
                             dict[cell_name].Depends.Capacity = 0;
+                            AdressAnalizator(tmp, cell_name);
                             dict2[cell_name] = "";
                             dict3[cell_name] = "";
                         }
@@ -161,26 +164,50 @@ namespace Labaratorna1_ANTLRFree
             return str;
         }
 
-
+        List<string> dependencesFound = new List<string>();
         bool dop_rec(string cell_name1, string cell_name2)
         {
+            
+            foreach(string dependence in dict[cell_name1].Depends)
+            {
+                if (dependencesFound.Contains(dependence))
+                {
+                    return true;
+                }
+                else
+                {
+                    dependencesFound.Add(dependence);
+                    if (dop_rec(dependence, dependence))
+                    {
+                        return true;
+                    }
+                }
+            }
+            /*
             if (dict[cell_name1].Depends.Contains(cell_name2))
             {
                 return true;
             }
             else
             {
+                /*if (dependencesFound.Contains(cell_name2))
+                {
+                    return true;
+                }
+                dependencesFound.Add(cell_name1);
                 List<string> dep = dict[cell_name1].Depends;
                 for (int i=0; i<dep.Count; i++)
                 {
                     return dop_rec(dep[i], cell_name1);
                 }
-            }
+            }*/
             return false;
         }
 
         public bool IsRecur(string cell_name)
         {
+            dependencesFound.Clear();
+            dependencesFound.Capacity = 0;
             return dop_rec(cell_name, cell_name);
         }
 
