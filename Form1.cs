@@ -377,7 +377,7 @@ namespace Labaratorna1_ANTLRFree
 
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Автор: Зотов Данило\nГрупа: К-25\n\nРекомендації щодо редактування форми: рекомендується відділяти лексеми пробілами, назви клітинок у формулах виділяються пробілом ОБОВ'ЯЗКОВО", "Допомога");
+            MessageBox.Show("Автор: Зотов Данило\nГрупа: К-25\n\nРекомендації щодо редактування форми: рекомендується відділяти лексеми пробілами, назви клітинок у формулах виділяються пробілом ОБОВ'ЯЗКОВО\n\nСписок операцій: + - * \\ > < = >= <= <> max[a, b], min[a,b]", "Допомога");
         }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -388,40 +388,43 @@ namespace Labaratorna1_ANTLRFree
 
         void OpenFile()
         {
-            Stream mystr = null;
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            if (MessageBox.Show("Всі незбережені зміни зникнуть", "Попередження", MessageBoxButtons.OKCancel) == DialogResult.OK)
             {
-                if ((mystr = openFileDialog1.OpenFile()) != null)
+                Stream mystr = null;
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 {
-                    using (mystr)
+                    if ((mystr = openFileDialog1.OpenFile()) != null)
                     {
-                        try
+                        using (mystr)
                         {
-                            StreamReader sr = new StreamReader(mystr);
-                            string scr = sr.ReadLine();
-                            string scc = sr.ReadLine();
-                            int cr = Convert.ToInt32(scr);
-                            int cc = Convert.ToInt32(scc);
-                            for (int i = 0; i < cr; i++)
+                            try
                             {
-                                for (int j = 0; j < cc; j++)
+                                StreamReader sr = new StreamReader(mystr);
+                                string scr = sr.ReadLine();
+                                string scc = sr.ReadLine();
+                                int cr = Convert.ToInt32(scr);
+                                int cc = Convert.ToInt32(scc);
+                                for (int i = 0; i < cr; i++)
                                 {
-                                    string cell_name = Converter26.To26(j) + (i + 1).ToString();
-                                    dataGridView1.Rows[i].Cells[j].Value = sr.ReadLine();
+                                    for (int j = 0; j < cc; j++)
+                                    {
+                                        string cell_name = Converter26.To26(j) + (i + 1).ToString();
+                                        dataGridView1.Rows[i].Cells[j].Value = sr.ReadLine();
 
+                                    }
                                 }
-                            }
-                            for (int i = 0; i < cr; i++)
-                            {
-                                for (int j = 0; j < cc; j++)
+                                for (int i = 0; i < cr; i++)
                                 {
-                                    string cell_name = Converter26.To26(j) + (i + 1).ToString();
-                                    dict[cell_name].Exp = sr.ReadLine();
-                                    RefreshCells();
+                                    for (int j = 0; j < cc; j++)
+                                    {
+                                        string cell_name = Converter26.To26(j) + (i + 1).ToString();
+                                        dict[cell_name].Exp = sr.ReadLine();
+                                        RefreshCells();
+                                    }
                                 }
                             }
+                            catch { }
                         }
-                        catch { }
                     }
                 }
             }
