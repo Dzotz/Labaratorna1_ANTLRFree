@@ -85,83 +85,102 @@ namespace Labaratorna1_ANTLRFree
                 string cell_name = Converter26.To26(curCol) + (curRow + 1).ToString();
                 string str = dataGridView1[curCol, curRow].Value.ToString();
                 dict2[cell_name] = str;
-                string tmp = dict[cell_name].Exp; 
+                string tmp = dict[cell_name].Exp;
                 dict[cell_name].Exp = str;
                 string st = AdressAnalizator(str, cell_name);
-                dict3[cell_name] = st;
-
-                if (IsRecur(cell_name)){
-                    MessageBox.Show("Expression is recur");
+                if (st == "null")
+                {
+                    MessageBox.Show("Wrong reference");
                     dict[cell_name].Value = pars.ExpressionStart(tmp).ToString();
                     dataGridView1[curCol, curRow].Value = dict[cell_name].Value;
                     dict[cell_name].Exp = tmp;
                     dict[cell_name].Depends.Clear();
-                    dict[cell_name].Depends.Capacity=0;
-                    AdressAnalizator(tmp, cell_name);
+                    dict[cell_name].Depends.Capacity = 0;
                     dict2[cell_name] = "";
                     dict3[cell_name] = "";
                 }
                 else
                 {
-                    
-                    double res = pars.ExpressionStart(st);
-                    string result = res.ToString();
-                    string errors = pars.err;
-                    if (errors != "")
+                    dict3[cell_name] = st;
+
+                    if (IsRecur(cell_name))
                     {
-                        if (errors == "no expression" || errors == "syntax error")
-                        {
-                            dataGridView1[curCol, curRow].Value = dict2[cell_name];
-                            dict[cell_name].Value = dict2[cell_name];
-                        }
-                        else
-                        {
-                            dict[cell_name].Value = pars.ExpressionStart(tmp).ToString();
-                            dataGridView1[curCol, curRow].Value = dict[cell_name].Value;
-                            dict[cell_name].Exp = tmp;
-                            dict[cell_name].Depends.Clear();
-                            dict[cell_name].Depends.Capacity = 0;
-                            AdressAnalizator(tmp, cell_name);
-                            dict2[cell_name] = "";
-                            dict3[cell_name] = "";
-                        }
-                        pars.err = "";
+                        MessageBox.Show("Expression is recur");
+                        dict[cell_name].Value = pars.ExpressionStart(tmp).ToString();
+                        dataGridView1[curCol, curRow].Value = dict[cell_name].Value;
+                        dict[cell_name].Exp = tmp;
+                        dict[cell_name].Depends.Clear();
+                        dict[cell_name].Depends.Capacity = 0;
+                        dict2[cell_name] = "";
+                        dict3[cell_name] = "";
                     }
                     else
                     {
-                        dict[cell_name].Value = result;
-                        dataGridView1[curCol, curRow].Value = dict[cell_name].Value;
+
+                        double res = pars.ExpressionStart(st);
+                        string result = res.ToString();
+                        string errors = pars.err;
+                        if (errors != "")
+                        {
+                            
+                                dict[cell_name].Value = pars.ExpressionStart(tmp).ToString();
+                                dataGridView1[curCol, curRow].Value = dict[cell_name].Value;
+                                dict[cell_name].Exp = tmp;
+                                dict[cell_name].Depends.Clear();
+                                dict[cell_name].Depends.Capacity = 0;
+                                AdressAnalizator(tmp, cell_name);
+                                dict2[cell_name] = "";
+                                dict3[cell_name] = "";
+                            
+                            pars.err = "";
+                        }
+                        else
+                        {
+                            dict[cell_name].Value = result;
+                            dataGridView1[curCol, curRow].Value = dict[cell_name].Value;
+                        }
                     }
                 }
-                RefreshCells();
-            }
+                    RefreshCells();
+                }
+            
             catch { }
         }
 
         public string AdressAnalizator(string str, string cell_name)
         {
-            string st = "";
-            char[] delim = { ' ' };
-            List<string> lex = new List<string>(str.Split(delim));
-            dict[cell_name].Depends.Clear();
-            dict[cell_name].Depends.Capacity = 0;
-            for (int i = 0; i<lex.Count;i++)
+            try
             {
-                string lexem = lex[i];
-                if (dict.ContainsKey(lexem))
+                string st = "";
+                char[] delim = { ' ' };
+                List<string> lex = new List<string>(str.Split(delim));
+                dict[cell_name].Depends.Clear();
+                dict[cell_name].Depends.Capacity = 0;
+                for (int i = 0; i < lex.Count; i++)
                 {
-                    dict[cell_name].Depends.Add(lexem);
-                    lexem = dict[lexem].Value;
+                    string lexem = lex[i];
+                    if (dict.ContainsKey(lexem))
+                    {
+                        dict[cell_name].Depends.Add(lexem);
+                        lexem = dict[lexem].Value;
 
-                    lex[i] = lexem;
+                        lex[i] = lexem;
+                    }
+                    
                 }
+                for (int i = 0; i < lex.Count; i++)
+                {
+                    st += lex[i];
+                }
+                str = st;
+                return str;
             }
-            for(int i = 0; i<lex.Count; i++)
+            catch
             {
-                st += lex[i];
+                str = "null";
+
+                return str;
             }
-            str = st;
-            return str;
         }
 
         List<string> dependencesFound = new List<string>();
@@ -227,10 +246,39 @@ namespace Labaratorna1_ANTLRFree
                         dict2.Add(cell_name, "");
                         dict3.Add(cell_name, "");
                     }
+                    string res;
                     string st = AdressAnalizator(dict[cell_name].Exp, cell_name);
-                    string res = pars.ExpressionStart(st).ToString();
-                    dict[cell_name].Value = res;
-                    dataGridView1[i, j].Value = dict[cell_name].Value;
+                    if (st == "null")
+                    {
+                        res = "0";
+                        dict[cell_name].Value = res;
+                        dataGridView1[i, j].Value = dict[cell_name].Value;
+                    }
+                    else
+                    {
+                        res = pars.ExpressionStart(st).ToString();
+                        string errors = pars.err;
+                        if (errors != "")
+                        {
+                            
+                                dict[cell_name].Value = pars.ExpressionStart("0").ToString();
+                                dataGridView1[curCol, curRow].Value = dict[cell_name].Value;
+                                dict[cell_name].Exp = "0";
+                                dict[cell_name].Depends.Clear();
+                                dict[cell_name].Depends.Capacity = 0;
+
+                                dict2[cell_name] = "";
+                                dict3[cell_name] = "";
+                            dataGridView1[i, j].Value = dict[cell_name].Value;
+                            pars.err = "";
+                        }
+                        else
+                        {
+                            dict[cell_name].Value = res;
+                            dataGridView1[i, j].Value = dict[cell_name].Value;
+                        }
+                    }
+                    
                 }
             }
         }
@@ -238,7 +286,7 @@ namespace Labaratorna1_ANTLRFree
         void AddRow()
         {
             DataGridViewRow row = new DataGridViewRow();
-            row.HeaderCell.Value = (dataGridView1.RowCount).ToString();
+            row.HeaderCell.Value = (dataGridView1.RowCount+1).ToString();
             dataGridView1.Rows.Add(row);
             RefreshCells();
         }
@@ -253,8 +301,8 @@ namespace Labaratorna1_ANTLRFree
             DataGridViewColumn column = new DataGridViewColumn();
             DataGridViewCell cell = new DataGridViewTextBoxCell();
             column.CellTemplate = cell;
-            column.HeaderText = Converter26.To26(dataGridView1.ColumnCount);
-            column.Name = Converter26.To26(dataGridView1.ColumnCount);
+            column.HeaderText = Converter26.To26(dataGridView1.ColumnCount+1);
+            column.Name = Converter26.To26(dataGridView1.ColumnCount+1);
             dataGridView1.Columns.Add(column);
             RefreshCells();
         }
@@ -263,29 +311,78 @@ namespace Labaratorna1_ANTLRFree
         {
             AddColumn();
         }
-
+        bool flag = false;
 
         void DeletedCellUpd(int row, int col)
         {
             string cell_name = Converter26.To26(col) + (row + 1).ToString();
-            dict2[cell_name] = "";
-            dict[cell_name].Value = "0";
-            dict[cell_name].Exp = "0";
-            dict3[cell_name] = "";
+            flag = false;
+            foreach (var i in dict)
+            {
+                if (i.Value.Depends.Contains(cell_name))
+                {
+                    flag = true;
+                    DialogResult result = MessageBox.Show("Ви намагаєтесь видалити клітинку на яку щось ссилається", "Помилка", MessageBoxButtons.OKCancel);
+                    if (result == DialogResult.OK)
+                    {
+                        flag = false;
+                    }
+                        break;
+                }
+            }
+            if (flag == false)
+            {
+                dict2[cell_name] = "";
+                dict[cell_name].Value = "0";
+                dict[cell_name].Exp = "0";
+                dict3[cell_name] = "";
+                dict.Remove(cell_name);
+                dict2.Remove(cell_name);
+                dict3.Remove(cell_name);
+            }
         }
 
         void DelRow()
         {
+            flag = false;
             try
             {
                 int row = dataGridView1.RowCount - 1;
-                for (int col = 0; col < dataGridView1.ColumnCount; col++)
+                if (row == 0)
                 {
-                    DeletedCellUpd(row, col);
+                    DialogResult result = MessageBox.Show("Це останній рядок", "Ви впевнені?", MessageBoxButtons.YesNo);
+                    if (result == DialogResult.Yes)
+                    {
+                        for (int col = 0; col < dataGridView1.ColumnCount; col++)
+                        {
+                            DeletedCellUpd(row, col);
+                            if (flag == true)
+                            {
+                                flag = false;
+                                return;
+                            }
+                        }
+                        RefreshCells();
+                        
+                        dataGridView1.Rows.RemoveAt(row);
+                    }
                 }
-                RefreshCells();
-                dataGridView1.Rows.RemoveAt(row);
+                else
+                {
+                    for (int col = 0; col < dataGridView1.ColumnCount; col++)
+                    {
+                        DeletedCellUpd(row, col);
+                        if (flag == true)
+                        {
+                            flag = false;
+                            return;
+                        }
+                    }
+                    dataGridView1.Rows.RemoveAt(row);
 
+                    RefreshCells();
+
+                }
             }
             catch { }
         }
@@ -297,15 +394,44 @@ namespace Labaratorna1_ANTLRFree
 
         void DelColumn()
         {
+            flag = false;
             try
             {
                 int col = dataGridView1.ColumnCount - 1;
-                for (int row = 0; row<dataGridView1.RowCount; row++)
+                if (col == 0)
                 {
-                    DeletedCellUpd(row, col);
+                    DialogResult result = MessageBox.Show("Це остання колонка", "Ви впевнені?", MessageBoxButtons.YesNo);
+                    if (result == DialogResult.Yes)
+                    {
+                        for (int row = 0; row < dataGridView1.RowCount; row++)
+                        {
+                            DeletedCellUpd(row, col);
+                            if (flag == true)
+                            {
+                                flag = false;
+                                return;
+                            }
+                        }
+                        dataGridView1.Columns.RemoveAt(col);
+
+                        RefreshCells();
+                    }
                 }
-                RefreshCells();
-                dataGridView1.Columns.RemoveAt(col);
+                else
+                {
+                    for (int row = 0; row < dataGridView1.RowCount; row++)
+                    {
+                        DeletedCellUpd(row, col);
+                        if (flag == true)
+                        {
+                            flag = false;
+                            return;
+                        }
+                    }
+                    RefreshCells();
+                    dataGridView1.Columns.RemoveAt(col);
+                }
+                
             }
             catch { }
         }
@@ -377,13 +503,18 @@ namespace Labaratorna1_ANTLRFree
 
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Автор: Зотов Данило\nГрупа: К-25\n\nРекомендації щодо редактування форми: рекомендується відділяти лексеми пробілами, назви клітинок у формулах виділяються пробілом ОБОВ'ЯЗКОВО\n\nСписок операцій: + - * \\ > < = >= <= <> max[a, b], min[a,b]", "Допомога");
+            MessageBox.Show("Автор: Зотов Данило\nГрупа: К-25\n\nРекомендації щодо редактування форми: рекомендується відділяти лексеми пробілами, назви клітинок у формулах виділяються пробілом ОБОВ'ЯЗКОВО\n\nСписок операцій: + - * \\ > < = >= <= <> max[a, b], min[a,b]\nЯкщо ссилка на комірку створює помилку ділення на нуль - формула стирається\nЯкщо формула ссилається на видалену клітинку - вона очищається", "Допомога");
         }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             string cell_name = Converter26.To26(dataGridView1.SelectedCells[0].ColumnIndex) + (dataGridView1.SelectedCells[0].RowIndex +1).ToString();
             textBox1.Text = dict[cell_name].Exp;
+        }
+
+        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+
         }
 
         void OpenFile()
@@ -404,6 +535,14 @@ namespace Labaratorna1_ANTLRFree
                                 string scc = sr.ReadLine();
                                 int cr = Convert.ToInt32(scr);
                                 int cc = Convert.ToInt32(scc);
+                                while (dataGridView1.RowCount < cr)
+                                {
+                                    AddRow();
+                                }
+                                while (dataGridView1.ColumnCount < cc)
+                                {
+                                    AddColumn();
+                                }
                                 for (int i = 0; i < cr; i++)
                                 {
                                     for (int j = 0; j < cc; j++)
@@ -422,6 +561,9 @@ namespace Labaratorna1_ANTLRFree
                                         RefreshCells();
                                     }
                                 }
+                            }
+                            catch (FormatException) {
+                                MessageBox.Show("Неправильний формат файлу", "Помилка");
                             }
                             catch { }
                         }
