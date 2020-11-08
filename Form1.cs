@@ -166,6 +166,12 @@ namespace Labaratorna1_ANTLRFree
 
                         lex[i] = lexem;
                     }
+                    else if (!"+-*/^<>()=m,]1234567890".Contains(lexem[0]))
+                    {
+                        MessageBox.Show("Ссилка на неіснуючу комірку");
+                        lexem = int.MaxValue.ToString();
+                        lex[i] = lexem;
+                    }
                     
                 }
                 for (int i = 0; i < lex.Count; i++)
@@ -285,10 +291,14 @@ namespace Labaratorna1_ANTLRFree
 
         void AddRow()
         {
-            DataGridViewRow row = new DataGridViewRow();
-            row.HeaderCell.Value = (dataGridView1.RowCount+1).ToString();
-            dataGridView1.Rows.Add(row);
-            RefreshCells();
+            try
+            {
+                DataGridViewRow row = new DataGridViewRow();
+                row.HeaderCell.Value = (dataGridView1.RowCount + 1).ToString();
+                dataGridView1.Rows.Add(row);
+                RefreshCells();
+            }
+            catch { MessageBox.Show("Додайте стовпчик"); }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -301,8 +311,8 @@ namespace Labaratorna1_ANTLRFree
             DataGridViewColumn column = new DataGridViewColumn();
             DataGridViewCell cell = new DataGridViewTextBoxCell();
             column.CellTemplate = cell;
-            column.HeaderText = Converter26.To26(dataGridView1.ColumnCount+1);
-            column.Name = Converter26.To26(dataGridView1.ColumnCount+1);
+            column.HeaderText = Converter26.To26(dataGridView1.ColumnCount);
+            column.Name = Converter26.To26(dataGridView1.ColumnCount);
             dataGridView1.Columns.Add(column);
             RefreshCells();
         }
@@ -350,22 +360,8 @@ namespace Labaratorna1_ANTLRFree
                 int row = dataGridView1.RowCount - 1;
                 if (row == 0)
                 {
-                    DialogResult result = MessageBox.Show("Це останній рядок", "Ви впевнені?", MessageBoxButtons.YesNo);
-                    if (result == DialogResult.Yes)
-                    {
-                        for (int col = 0; col < dataGridView1.ColumnCount; col++)
-                        {
-                            DeletedCellUpd(row, col);
-                            if (flag == true)
-                            {
-                                flag = false;
-                                return;
-                            }
-                        }
-                        RefreshCells();
-                        
-                        dataGridView1.Rows.RemoveAt(row);
-                    }
+                    DialogResult result = MessageBox.Show("Це останній рядок", "Ви впевнені?", MessageBoxButtons.OK);
+                   
                 }
                 else
                 {
@@ -400,22 +396,8 @@ namespace Labaratorna1_ANTLRFree
                 int col = dataGridView1.ColumnCount - 1;
                 if (col == 0)
                 {
-                    DialogResult result = MessageBox.Show("Це остання колонка", "Ви впевнені?", MessageBoxButtons.YesNo);
-                    if (result == DialogResult.Yes)
-                    {
-                        for (int row = 0; row < dataGridView1.RowCount; row++)
-                        {
-                            DeletedCellUpd(row, col);
-                            if (flag == true)
-                            {
-                                flag = false;
-                                return;
-                            }
-                        }
-                        dataGridView1.Columns.RemoveAt(col);
-
-                        RefreshCells();
-                    }
+                    DialogResult result = MessageBox.Show("Це остання колонка", "Ви впевнені?", MessageBoxButtons.OK);
+                    
                 }
                 else
                 {
